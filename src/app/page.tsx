@@ -17,10 +17,10 @@ export default function Home() {
         </p>
         {/* Optional: Add a link to the new details page */}
         <Link
-          href="/details"
+          href="/gallery"
           className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md shadow hover:bg-blue-700 transition duration-200"
         >
-          Go to Details
+          Gallery
         </Link>
       </main>
 
