@@ -1,5 +1,3 @@
-gf; // /app/api/your-route/route.ts (or similar)
-
 import fs from "fs";
 import path from "path";
 import { parser } from "stream-json";
