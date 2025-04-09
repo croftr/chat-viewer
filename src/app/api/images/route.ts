@@ -34,10 +34,14 @@ export async function GET() {
 	}
 
 	try {
+		console.log(`Trying to list objects in bucket: ${S3_BUCKET_NAME}`);
+		
 		const command = new ListObjectsV2Command({
 			Bucket: S3_BUCKET_NAME,
 		});
 
+		console.log(`Sending command to S3: ${JSON.stringify(command)}`);
+		
 		const { Contents } = await s3Client.send(command);
 
 		if (!Contents) {
