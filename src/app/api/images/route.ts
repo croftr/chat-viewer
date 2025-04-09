@@ -1,43 +1,76 @@
 // app/api/images/route.ts
 import { NextResponse } from "next/server";
-import fs from "node:fs/promises"; // Use the promise-based version of fs
-import path from "path";
+import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 
-// Define allowed image extensions
+// Use environment variables for configuration - Set these in Amplify Console -> Environment variables
+const S3_BUCKET_NAME = "chat-viewer-hangouts-gallery";
+const AWS_REGION = "eu-north-1";
+
+if (!S3_BUCKET_NAME || !AWS_REGION) {
+	console.error("Missing S3 Bucket Name or AWS Region environment variables");
+	// Return an appropriate error response during build or runtime if needed
+	// For now, we'll let it fail during S3 client initialization if vars are missing
+}
+
+// Configure the S3 client
+const s3Client = new S3Client({
+	region: AWS_REGION,
+	// On Amplify, credentials should be automatically picked up from the Lambda execution role.
+	// Locally, ensure your environment is configured (e.g., ~/.aws/credentials or ENV vars)
+});
+
+// Construct the base URL for your images (adjust region/domain if needed)
+const BUCKET_URL_PREFIX = `https://<span class="math-inline">${S3_BUCKET_NAME}.s3.</span>${AWS_REGION}.amazonaws.com/`;
+
+// Allowed image extensions (optional but good practice)
 const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"];
 
 export async function GET() {
-	// Construct the absolute path to the target directory (public/img)
-	// process.cwd() gives the root directory of your Next.js project
-	const imgDirectory = path.join(process.cwd(), "public", "img");
+	if (!S3_BUCKET_NAME || !AWS_REGION) {
+		return NextResponse.json(
+			{ error: "Server configuration error: Missing S3 details." },
+			{ status: 500 },
+		);
+	}
 
 	try {
-		// Read the contents of the directory
-		const dirents = await fs.readdir(imgDirectory, { withFileTypes: true });
+		const command = new ListObjectsV2Command({
+			Bucket: S3_BUCKET_NAME,
+		});
 
-		// Filter out directories and keep only files with allowed image extensions
-		const imageFiles = dirents
-			.filter(
-				(dirent) =>
-					dirent.isFile() &&
-					imageExtensions.includes(path.extname(dirent.name).toLowerCase()),
+		const { Contents } = await s3Client.send(command);
+
+		if (!Contents) {
+			return NextResponse.json({ images: [] });
+		}
+
+		const imageFiles = Contents
+			// Ensure item has a Key and Size > 0 (filters out empty placeholders)
+			.filter((item) => item.Key && item.Size && item.Size > 0)
+			// Filter by allowed extensions
+			.filter((item) =>
+				imageExtensions.some((ext) => item.Key?.toLowerCase().endsWith(ext)),
 			)
-			.map((dirent) => `/img/${dirent.name}`); // Prepend the necessary path prefix for the src prop
+			// Map to the full public URL
 
-		// Return the list of image file paths as JSON
+			.map(
+				(item) =>
+					`https://chat-viewer-hangouts-gallery.s3.eu-north-1.amazonaws.com/${item.Key}`,
+			);
+
 		return NextResponse.json({ images: imageFiles });
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	} catch (error: any) {
-		// Handle errors, e.g., directory not found
-		console.error("Error reading image directory:", error);
-		if (error.code === "ENOENT") {
+		console.error("Error listing S3 objects:", error);
+		// Check for specific AWS SDK errors if needed
+		if (error.name === "NoSuchBucket") {
 			return NextResponse.json(
-				{ error: "Image directory not found." },
-				{ status: 404 },
+				{ error: "Configured S3 bucket not found." },
+				{ status: 500 },
 			);
 		}
 		return NextResponse.json(
-			{ error: "Failed to read image directory." },
+			{ error: "Failed to list images from storage." },
 			{ status: 500 },
 		);
 	}

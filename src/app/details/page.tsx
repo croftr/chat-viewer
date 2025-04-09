@@ -110,7 +110,10 @@ export default function DetailsPage() {
 						errorData.error || `HTTP error! status: ${response.status}`,
 					);
 				}
+
 				const data: { images: string[] } = await response.json();
+
+				console.log("checking response", data);
 				setGalleryImages(data.images || []);
 				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			} catch (error: any) {
