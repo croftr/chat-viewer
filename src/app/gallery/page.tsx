@@ -14,13 +14,14 @@ interface Message {
 
 type ActiveTab = "messages" | "gallery";
 
+
 // RENAME the component function (e.g., from Home to DetailsPage)
 export default function DetailsPage() {
     // --- State variables (Messages, Tabs, Gallery) ---
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(false);
     const [streaming, setStreaming] = useState(false);
-    const [activeTab, setActiveTab] = useState<ActiveTab>("messages");
+    const [activeTab, setActiveTab] = useState<ActiveTab>("gallery");
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
     const [galleryLoading, setGalleryLoading] = useState<boolean>(false);
     const [galleryError, setGalleryError] = useState<string | null>(null);
@@ -104,10 +105,10 @@ export default function DetailsPage() {
     return (
         <div className="flex flex-col items-center min-h-screen p-4 sm:p-8 font-[family-name:var(--font-geist-sans)]">
             <header className="text-center mb-6">
-                <h1 className="text-2xl font-bold">Details - Messages & Gallery</h1>
+                <h1 className="text-2xl font-bold">Image Gallery</h1>
             </header>
 
-            <div className="mb-6">
+            {/* <div className="mb-6">
                 <button
                     type="button"
                     onClick={fetchMessages}
@@ -120,10 +121,10 @@ export default function DetailsPage() {
                             ? "Streaming Messages..."
                             : "Fetch Messages"}
                 </button>
-            </div>
+            </div> */}
 
             {/* Tab Navigation */}
-            <div className="w-full max-w-md border-b border-gray-300 mb-6">
+            {/* <div className="w-full max-w-md border-b border-gray-300 mb-6">
                 <nav className="flex space-x-1">
                     <button
                         type="button"
@@ -140,7 +141,7 @@ export default function DetailsPage() {
                         Gallery
                     </button>
                 </nav>
-            </div>
+            </div> */}
 
             {/* Tab Content */}
             <main className="w-full max-w-full">
@@ -189,7 +190,7 @@ export default function DetailsPage() {
                                 <select
                                     id="imagesPerPage"
                                     disabled={true}
-                                    className="border rounded py-1 px-2 text-sm"
+                                    className="border rounded py-1 px-2 text-sm disabled:opacity-50"
                                     value={imagesPerPage}
                                     onChange={(e) => {
                                         const newLimit = parseInt(e.target.value, 10);
