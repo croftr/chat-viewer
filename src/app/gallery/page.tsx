@@ -2,23 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-
-// --- Message interface ---
-interface Message {
-    text: string;
-    created_date: string;
-    creator: {
-        name: string;
-    };
-}
+import type { HangoutMessage } from "../types";
 
 type ActiveTab = "messages" | "gallery";
 
-
-// RENAME the component function (e.g., from Home to DetailsPage)
 export default function DetailsPage() {
     // --- State variables (Messages, Tabs, Gallery) ---
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [messages, setMessages] = useState<HangoutMessage[]>([]);
     const [loading, setLoading] = useState(false);
     const [streaming, setStreaming] = useState(false);
     const [activeTab, setActiveTab] = useState<ActiveTab>("gallery");
@@ -48,12 +38,13 @@ export default function DetailsPage() {
                 throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
             }
             const data: { images: string[]; nextToken?: string; isTruncated?: boolean } = await res.json();
-        
+
             // setGalleryImages((prevImages) => [...prevImages, ...data.images]);            
-            setGalleryImages((prevImages) => data.images);            
-            
+            setGalleryImages((prevImages) => data.images);
+
             setGalleryNextToken(data.nextToken);
             setGalleryHasMore(!!data.nextToken && data.isTruncated !== false);
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         } catch (error: any) {
             console.error("Failed to fetch gallery images:", error);
             setGalleryError(error.message || "An unknown error occurred");
@@ -95,11 +86,10 @@ export default function DetailsPage() {
 
     // --- getTabClass helper (remains the same) ---
     const getTabClass = (tabName: ActiveTab) => {
-        return `py-2 px-4 rounded-t-md font-medium focus:outline-none ${
-            activeTab === tabName
-                ? "bg-white border border-gray-300 border-b-0 text-blue-600"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-        }`;
+        return `py-2 px-4 rounded-t-md font-medium focus:outline-none ${activeTab === tabName
+            ? "bg-white border border-gray-300 border-b-0 text-blue-600"
+            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`;
     };
 
     return (
@@ -108,40 +98,6 @@ export default function DetailsPage() {
                 <h1 className="text-2xl font-bold">Image Gallery</h1>
             </header>
 
-            {/* <div className="mb-6">
-                <button
-                    type="button"
-                    onClick={fetchMessages}
-                    disabled={loading || streaming}
-                    className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${loading || streaming ? "opacity-50 cursor-not-allowed" : ""}`}
-                >
-                    {loading && !streaming
-                        ? "Connecting..."
-                        : streaming
-                            ? "Streaming Messages..."
-                            : "Fetch Messages"}
-                </button>
-            </div> */}
-
-            {/* Tab Navigation */}
-            {/* <div className="w-full max-w-md border-b border-gray-300 mb-6">
-                <nav className="flex space-x-1">
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab("messages")}
-                        className={getTabClass("messages")}
-                    >
-                        Messages
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab("gallery")}
-                        className={getTabClass("gallery")}
-                    >
-                        Gallery
-                    </button>
-                </nav>
-            </div> */}
 
             {/* Tab Content */}
             <main className="w-full max-w-full">
@@ -157,7 +113,7 @@ export default function DetailsPage() {
                             <div key={index} className="bg-gray-100 rounded-md p-4 shadow-sm">
                                 <p className="text-gray-800">{message.text}</p>
                                 <div className="mt-2 text-sm text-gray-500">
-                                    <span>{message.creator?.name ?? "Unknown User"}</span> -{" "}
+                                    <span>{message.author ?? "Unknown User"}</span> -{" "}
                                     <span>
                                         {new Date(message.created_date).toLocaleTimeString()} on{" "}
                                         {new Date(message.created_date).toLocaleDateString()}
@@ -193,10 +149,9 @@ export default function DetailsPage() {
                                     className="border rounded py-1 px-2 text-sm disabled:opacity-50"
                                     value={imagesPerPage}
                                     onChange={(e) => {
-                                        const newLimit = parseInt(e.target.value, 10);
-                                                                                
-                                        if (!isNaN(newLimit) && newLimit > 0) {
-                                            console.log('set to ' + newLimit);
+                                        const newLimit = Number.parseInt(e.target.value, 10);
+
+                                        if (!Number.isNaN(newLimit) && newLimit > 0) {
                                             setGalleryLimit(newLimit);
                                             setGalleryImages([]);
                                             setGalleryNextToken(undefined);
@@ -217,6 +172,7 @@ export default function DetailsPage() {
                             {/* Example of page navigation - adjust UI as needed */}
                             {galleryHasMore && (
                                 <button
+                                    type="button"
                                     onClick={loadMore}
                                     disabled={galleryLoading}
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-sm"
@@ -227,7 +183,7 @@ export default function DetailsPage() {
                         </div>
 
                         {/* Gallery Loading State */}
-                        {galleryLoading && galleryImages.length !> 0 && (
+                        {galleryLoading && (
                             <p className="text-center italic text-gray-600">
                                 Loading gallery...
                             </p>
@@ -268,24 +224,6 @@ export default function DetailsPage() {
                             </p>
                         ))}
 
-                        {/* Optional: Page Navigation (if you prefer explicit page numbers) */}
-                        {/* <div className="mt-4 flex justify-center space-x-2">
-                            <button
-                                onClick={() => handlePageChange(currentPage - 1)}
-                                disabled={currentPage === 1 || galleryLoading}
-                                className="py-2 px-4 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
-                            >
-                                Previous
-                            </button>
-                            <span>Page {currentPage}</span>
-                            <button
-                                onClick={() => handlePageChange(currentPage + 1)}
-                                disabled={!galleryHasMore || galleryLoading}
-                                className="py-2 px-4 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
-                            >
-                                Next
-                            </button>
-                        </div> */}
                     </div>
                 )}
             </main>

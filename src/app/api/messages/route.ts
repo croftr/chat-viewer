@@ -5,14 +5,7 @@ import {
 	ScanCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
-
-export type HangoutMessage = {
-	author: string;
-	message_id: string;
-	created_date: string;
-	text: string;
-	topic_id: string;
-};
+import type { HangoutMessage } from "@/app/types";
 
 // Initialize DynamoDB client (ensure you have AWS credentials configured)
 const dynamoDbClient = new DynamoDBClient({

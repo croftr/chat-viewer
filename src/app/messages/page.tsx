@@ -1,24 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-
-// --- Message interface ---
-interface Message {
-    text: string;
-    created_date: string;
-    creator: {
-        name: string;
-    };
-}
-
-export type HangoutMessage = {
-    author: string;
-    message_id: string;
-    created_date: string;
-    text: string;
-    topic_id: string;
-};
-
+import type { HangoutMessage } from "@/app/types";
 
 export default function DetailsPage() {
     // --- State variables (Messages, Tabs, Gallery) ---
@@ -82,7 +65,7 @@ export default function DetailsPage() {
                         <div key={index} className="bg-gray-100 rounded-md p-4 shadow-sm">
                             <p className="text-gray-800">{message.text}</p>
                             <div className="mt-2 text-sm text-gray-500">
-                                <span>{message.creator?.name ?? "Unknown User"}</span> -{" "}
+                                <span>{message.author ?? "Unknown User"}</span> -{" "}
                                 <span>
                                     {new Date(message.created_date).toLocaleTimeString()} on{" "}
                                     {new Date(message.created_date).toLocaleDateString()}
