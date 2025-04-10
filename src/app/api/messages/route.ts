@@ -3,6 +3,7 @@ import {
 	type AttributeValue,
 	DynamoDBClient,
 	ScanCommand,
+	QueryCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import type { HangoutMessage } from "@/app/types";
@@ -14,11 +15,29 @@ const dynamoDbClient = new DynamoDBClient({
 
 export async function GET(request: NextRequest) {
 	try {
-		const scanCommand = new ScanCommand({
-			TableName: "hangout_messages",
-		});
+		const { searchParams } = request.nextUrl;
+		const author = searchParams.get("author");
 
-		const response = await dynamoDbClient.send(scanCommand);
+		// biome-ignore lint/suspicious/noImplicitAnyLet: <explanation>
+		let response;
+
+		if (author) {
+			// Query by author (partition key)
+			const queryCommand = new QueryCommand({
+				TableName: "hangout_messages",
+				KeyConditionExpression: "author = :authorValue",
+				ExpressionAttributeValues: marshall({
+					":authorValue": author,
+				}),
+			});
+			response = await dynamoDbClient.send(queryCommand);
+		} else {
+			// Scan the entire table if no author is provided
+			const scanCommand = new ScanCommand({
+				TableName: "hangout_messages",
+			});
+			response = await dynamoDbClient.send(scanCommand);
+		}
 
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		const messagesAsJson: any[] = [];
