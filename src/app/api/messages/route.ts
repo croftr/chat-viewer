@@ -2,13 +2,12 @@ import { NextResponse, type NextRequest } from "next/server";
 import {
 	type AttributeValue,
 	DynamoDBClient,
-	ScanCommand,
 	QueryCommand,
+	ScanCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import type { HangoutMessage } from "@/app/types";
 
-// Initialize DynamoDB client (ensure you have AWS credentials configured)
 const dynamoDbClient = new DynamoDBClient({
 	region: "eu-north-1",
 });
@@ -22,21 +21,25 @@ export async function GET(request: NextRequest) {
 		let response;
 
 		if (author) {
-			// Query by author (partition key)
+			// Query by author using the GSI and order by created_date
 			const queryCommand = new QueryCommand({
-				TableName: "hangout_messages",
+				TableName: "chat_messages",
 				KeyConditionExpression: "author = :authorValue",
 				ExpressionAttributeValues: marshall({
 					":authorValue": author,
 				}),
+				ScanIndexForward: false, // Set to true for ascending, false for descending
 			});
 			response = await dynamoDbClient.send(queryCommand);
 		} else {
-			// Scan the entire table if no author is provided
-			const scanCommand = new ScanCommand({
-				TableName: "hangout_messages",
+			//no author so order all messages by created_date
+			const queryCommand = new QueryCommand({
+				TableName: "chat_messages",
+				IndexName: "date-index", // Name of your GSI
+				KeyConditionExpression: "author IS NOT NULL", // Dummy condition to use the index
+				ScanIndexForward: false, // Set to true for ascending, false for descending
 			});
-			response = await dynamoDbClient.send(scanCommand);
+			response = await dynamoDbClient.send(queryCommand);
 		}
 
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
