@@ -1,5 +1,5 @@
 // app/api/images/route.ts
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 
 // Use environment variables for configuration - Set these in Amplify Console -> Environment variables

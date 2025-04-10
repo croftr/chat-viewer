@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
 
 // --- Message interface ---
 interface Message {
@@ -12,19 +11,44 @@ interface Message {
     };
 }
 
-// RENAME the component function (e.g., from Home to DetailsPage)
+export type HangoutMessage = {
+    author: string;
+    message_id: string;
+    created_date: string;
+    text: string;
+    topic_id: string;
+};
+
+
 export default function DetailsPage() {
     // --- State variables (Messages, Tabs, Gallery) ---
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [messages, setMessages] = useState<HangoutMessage[]>([]);
     const [loading, setLoading] = useState(false);
-    const [streaming, setStreaming] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
 
-    // --- fetchMessages function (remains the same) ---
     const fetchMessages = useCallback(async () => {
-        // ... (rest of the fetchMessages function)
-    }, [loading, streaming]);
+        setLoading(true);
+        setError(null);
 
+        try {
+            const response = await fetch("/api/messages"); // Assuming your API route is at /api/messages
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                setError(errorData?.error || `Failed to fetch messages: ${response.status}`);
+                return;
+            }
+
+            const data: HangoutMessage[] = await response.json();
+            setMessages(data);
+        } catch (err) {
+            console.error("Error fetching messages:", err);
+            setError("An unexpected error occurred while fetching messages.");
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
 
     return (
@@ -37,14 +61,10 @@ export default function DetailsPage() {
                 <button
                     type="button"
                     onClick={fetchMessages}
-                    disabled={loading || streaming}
-                    className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${loading || streaming ? "opacity-50 cursor-not-allowed" : ""}`}
+                    disabled={loading}
+                    className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
-                    {loading && !streaming
-                        ? "Connecting..."
-                        : streaming
-                            ? "Streaming Messages..."
-                            : "Fetch Messages"}
+                    {loading ? "Connecting..." : "Fetch Messages"}
                 </button>
             </div>
 
@@ -53,7 +73,7 @@ export default function DetailsPage() {
                 {/* Messages Tab Content */}
 
                 <div className="flex flex-col gap-4 max-w-md w-full">
-                    {!loading && !streaming && messages.length === 0 && (
+                    {!loading && messages.length === 0 && (
                         <p className="text-center text-gray-600">
                             No messages loaded. Click "Fetch Messages" to start.
                         </p>
@@ -70,12 +90,12 @@ export default function DetailsPage() {
                             </div>
                         </div>
                     ))}
-                    {!loading && !streaming && messages.length > 0 && (
+                    {!loading && messages.length > 0 && (
                         <p className="text-center italic text-sm text-gray-500 mt-4">
                             Message stream complete.
                         </p>
                     )}
-                    {streaming && messages.length > 0 && (
+                    {messages.length > 0 && (
                         <p className="text-center italic text-sm text-gray-500 mt-4">
                             Streaming more messages...
                         </p>
