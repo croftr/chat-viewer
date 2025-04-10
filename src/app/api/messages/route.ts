@@ -32,13 +32,16 @@ export async function GET(request: NextRequest) {
 			});
 			response = await dynamoDbClient.send(queryCommand);
 		} else {
-			//no author so order all messages by created_date
 			const queryCommand = new QueryCommand({
-				TableName: "chat_messages",
-				IndexName: "date-index", // Name of your GSI
-				KeyConditionExpression: "author IS NOT NULL", // Dummy condition to use the index
+				TableName: "hangout_messages",
+				IndexName: "date-index", // Name of the new GSI
+				KeyConditionExpression: "GLOBAL = :globalValue", // Changed attribute name
+				ExpressionAttributeValues: marshall({
+					":globalValue": "GLOBAL", // Changed attribute value to match
+				}),
 				ScanIndexForward: false, // Set to true for ascending, false for descending
 			});
+
 			response = await dynamoDbClient.send(queryCommand);
 		}
 

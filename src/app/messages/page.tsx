@@ -60,8 +60,9 @@ export default function DetailsPage() {
                 <button
                     type="button"
                     onClick={handleFetchAllButtonClick}
-                    disabled={loading}
-                    className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${loading && !selectedAuthor ? "opacity-50 cursor-not-allowed" : ""}`}
+                    disabled={loading || true}
+                    className="border bg-gray-400 text-gray-600 font-bold py-2 px-4 rounded"
+                // className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${loading && !selectedAuthor ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                     {loading && !selectedAuthor ? "Fetching All..." : "Fetch All Messages"}
                 </button>
