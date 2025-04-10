@@ -22,15 +22,19 @@ export default function Home() {
   // Structure the monthly data for better display
   const monthlyBreakdown = Object.entries(monthlyData)
     .sort((a, b) => Number.parseInt(b[0]) - Number.parseInt(a[0])) // Sort by year descending
-    .map(([year, months]) => ({
-      year: year,
-      months: Object.entries(months)
-        .sort((a, b) => Number.parseInt(a[0]) - Number.parseInt(b[0])) // Sort by month ascending
-        .map(([month, count]) => ({
-          month: new Date(Number.parseInt(year), Number.parseInt(month) - 1, 1).toLocaleString('default', { month: 'short' }),
-          count: count,
-        })),
-    }));
+    .map(([year, months]) => {
+      const totalYearlyCount = Object.values(months).reduce((sum, count) => sum + count, 0); // Calculate total for the year
+      return {
+        year: year,
+        total: totalYearlyCount, // Add total count for the year
+        months: Object.entries(months)
+          .sort((a, b) => Number.parseInt(a[0]) - Number.parseInt(b[0])) // Sort by month ascending
+          .map(([month, count]) => ({
+            month: new Date(Number.parseInt(year), Number.parseInt(month) - 1, 1).toLocaleString('default', { month: 'short' }),
+            count: count,
+          })),
+      };
+    });
 
   // Dark mode state (optional, for client-side control)
   const [darkMode, setDarkMode] = useState(false);
@@ -144,9 +148,11 @@ export default function Home() {
 
           <section className="w-full rounded-md shadow-md p-6 bg-white dark:bg-gray-800">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Messages Over Time</h2>
-            {monthlyBreakdown.map(({ year, months }) => (
+            {monthlyBreakdown.map(({ year, total, months }) => (
               <div key={year} className="mb-4">
-                <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">{year}</h3>
+                <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">
+                  {year} <span className="text-green-600 dark:text-green-400">({total} messages)</span>
+                </h3>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {months.map(({ month, count }) => (
                     <div key={`${year}-${month}`} className="bg-gray-100 dark:bg-gray-700 rounded-md p-2 text-sm text-gray-800 dark:text-gray-200">
@@ -161,7 +167,7 @@ export default function Home() {
       </div>
 
       <footer className="mt-auto py-4 text-sm text-gray-500 dark:text-gray-400 text-center">
-        <p>&copy; {new Date().getFullYear()} My Awesome App</p>
+        <p>&copy; {new Date().getFullYear()} Chat viewer</p>
       </footer>
     </div>
   );
