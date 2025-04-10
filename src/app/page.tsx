@@ -21,7 +21,7 @@ export default function Home() {
 
   // Structure the monthly data for better display
   const monthlyBreakdown = Object.entries(monthlyData)
-    .sort((a, b) => Number.parseInt(b[0]) - Number.parseInt(a[0])) // Sort by year descending
+    .sort((a, b) => Number.parseInt(a[0]) - Number.parseInt(b[0])) // Sort by year ascending
     .map(([year, months]) => {
       const totalYearlyCount = Object.values(months).reduce((sum, count) => sum + count, 0); // Calculate total for the year
       return {
