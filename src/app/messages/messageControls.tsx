@@ -49,13 +49,14 @@ export function MessageControls({
             <button
                 type="button"
                 onClick={handleSortToggle}
+                aria-label={sortAscending ? "Sort by date descending" : "Sort by date ascending"}
                 className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
                 <IconContext.Provider value={{ size: "1em", className: "react-icons" }}>
-                    <div className="flex items-center gap-1">
+                    <span className="flex items-center gap-1">
                         {sortAscending ? <FaArrowUp /> : <FaArrowDown />}
                         <FaCalendarAlt />
-                    </div>
+                    </span>
                 </IconContext.Provider>
             </button>
         </div>
