@@ -8,6 +8,7 @@ import {
     FaCalendarAlt,
     FaSearch,
 } from "react-icons/fa";
+import { messageMetadata } from '../constants'; // Assuming this contains your metadata
 
 const authors = [
     "Gary Morris",
@@ -27,9 +28,10 @@ export default function MessageControls({
     handleAuthorButtonClick,
     handleSortToggle,
     sortAscending,
-    handleSearch, // Renamed for clarity
+    handleSearch,
     searchString,
-    setSearchString, // Added setSearchString prop
+    setSearchString,
+    messageCount,
 }: {
     authors: string[];
     loading: boolean;
@@ -38,11 +40,22 @@ export default function MessageControls({
     handleAuthorButtonClick: (author: string) => void;
     handleSortToggle: () => void;
     sortAscending: boolean;
-    handleSearch: () => void; // Corrected type definition
+    handleSearch: () => void;
     searchString: string;
     setSearchString: (search: string) => void;
+    messageCount: number;
 }) {
+    const [localSearchString, setLocalSearchString] = useState(searchString);
+    const [currentAuthorName, setCurrentAuthorName] = useState<string | null>(null); // New state
 
+    const handleLocalSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setLocalSearchString(e.target.value);
+    };
+
+    const handleAuthorClick = (author: string) => {
+        handleAuthorButtonClick(author);
+        setCurrentAuthorName(author); // Set author name in local state
+    };
 
     return (
         <div className="mb-6 flex flex-col gap-4 justify-center">
@@ -55,13 +68,13 @@ export default function MessageControls({
                     className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${loading && !selectedAuthor ? "opacity-50 cursor-not-allowed" : ""
                         }`}
                 >
-                    {loading && !selectedAuthor ? "Fetching All..." : "Fetch All Messages"}
+                    {loading && !selectedAuthor ? "Fetching All..." : "All Authors"}
                 </button>
                 {authors.map((author) => (
                     <button
                         key={author}
                         type="button"
-                        onClick={() => handleAuthorButtonClick(author)}
+                        onClick={() => handleAuthorClick(author)} // Use handleAuthorClick
                         disabled={loading}
                         className={`bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${loading && selectedAuthor === author ? "opacity-50 cursor-not-allowed" : ""
                             }`}
@@ -88,6 +101,14 @@ export default function MessageControls({
                         </span>
                     </IconContext.Provider>
                 </button>
+
+                <div className="ml-4 text-gray-100 gap-1 flex items-center">
+                    {messageCount}
+                    {/* {!messageCount && currentAuthorName && currentAuthorName in messageMetadata.messagesByAuthor
+                        ? messageMetadata.messagesByAuthor[currentAuthorName as keyof typeof messageMetadata.messagesByAuthor]
+                        : messageMetadata.totalMessages} */}
+                    <span className="text-gray-100">messages</span>
+                </div>
             </div>
 
             {/* Search Input and Button */}
@@ -101,7 +122,7 @@ export default function MessageControls({
                 />
                 <button
                     type="button"
-                    onClick={handleSearch} // Call triggerSearch instead of handleSearch directly
+                    onClick={handleSearch}
                     className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2"
                 >
                     <FaSearch />

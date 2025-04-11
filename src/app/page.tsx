@@ -80,7 +80,7 @@ export default function Home() {
           </div>
 
           <section className="w-full rounded-md shadow-md p-6 bg-white dark:bg-gray-800">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Community Authors</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Members (Past and Present)</h2>
             <div className="grid grid-cols-1 gap-4">
               {authors.map((author) => {
                 const bio = messageMetadata.bioByAuthor[author];

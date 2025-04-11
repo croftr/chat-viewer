@@ -23,14 +23,14 @@ export default function DetailsPage() {
     const [selectedAuthor, setSelectedAuthor] = useState<string | null>(null);
     const [sortAscending, setSortAscending] = useState(false); // Default to descending
     const [searchString, setSearchString] = useState(""); // New state for search
+    const [messageCount, setMessageCount] = useState(0); // New state for search
 
     const fetchMessages = useCallback(
         async (author?: string | null, sort?: string) => {
 
-            console.log('search with ', searchString);
-
             setLoading(true);
             setError(null);
+            setMessageCount(0); // Reset message count
             setMessages([]); // Clear previous messages before fetching!!!
 
             let url = "/api/messages";
@@ -56,6 +56,7 @@ export default function DetailsPage() {
                 }
 
                 const data: HangoutMessage[] = await response.json();
+                setMessageCount(data.length);
                 setMessages(data);
             } catch (err) {
                 console.error("Error fetching messages:", err);
@@ -91,7 +92,6 @@ export default function DetailsPage() {
     }, []);
 
     const handleSearch = useCallback(() => {
-
         fetchMessages(selectedAuthor, sortAscending ? "asc" : "desc");
     }, [fetchMessages, selectedAuthor, sortAscending]);
 
@@ -117,6 +117,7 @@ export default function DetailsPage() {
                 handleSearch={handleSearch} // Pass the new handler
                 searchString={searchString}
                 setSearchString={setSearchString}
+                messageCount={messageCount}
             />
 
             <MessageDisplay
