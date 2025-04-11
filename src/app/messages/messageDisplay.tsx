@@ -17,7 +17,6 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({ messages, loading, sele
                 {loading && (
                     <div className="text-center">
                         <p className="italic text-gray-500">Loading messages...</p>
-                        {/* You can add a more sophisticated loading indicator here, like a spinner */}
                     </div>
                 )}
                 {!loading && messages.length === 0 && !error && (
@@ -37,11 +36,7 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({ messages, loading, sele
                         </div>
                     </div>
                 ))}
-                {!loading && messages.length > 0 && (
-                    <p className="text-center italic text-sm text-gray-500 mt-4">
-                        Message stream complete.
-                    </p>
-                )}
+
             </div>
         </main>
     );
