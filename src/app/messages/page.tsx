@@ -102,9 +102,6 @@ export default function DetailsPage() {
 
     return (
         <div className="min-h-screen p-4 sm:p-8 font-[family-name:var(--font-geist-sans)]">
-            <header className="text-center mb-6">
-                <h1 className="text-2xl font-bold">Messages</h1>
-            </header>
 
             <MessageControls
                 authors={authors}

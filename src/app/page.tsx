@@ -120,6 +120,7 @@ export default function Home() {
                         <h4 className="font-semibold text-gray-800 dark:text-gray-200">Content Themes:</h4>
                         <ul className="list-disc pl-4 text-sm text-gray-600 dark:text-gray-400">
                           {bio.contentThemes.map((theme, index) => (
+                            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                             <li key={index}>{theme}</li>
                           ))}
                         </ul>
@@ -130,6 +131,7 @@ export default function Home() {
                         <h4 className="font-semibold text-gray-800 dark:text-gray-200">Style:</h4>
                         <ul className="list-disc pl-4 text-sm text-gray-600 dark:text-gray-400">
                           {bio.style.map((style, index) => (
+                            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                             <li key={index}>{style}</li>
                           ))}
                         </ul>
