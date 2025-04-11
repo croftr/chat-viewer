@@ -16,6 +16,8 @@ export async function GET(request: NextRequest) {
 	try {
 		const { searchParams } = request.nextUrl;
 		const author = searchParams.get("author");
+		const sortOrder = searchParams.get("sort");
+		const sortAscending = sortOrder ? sortOrder.toLowerCase() === "asc" : false;
 
 		// biome-ignore lint/suspicious/noImplicitAnyLet: <explanation>
 		let response;
@@ -23,23 +25,26 @@ export async function GET(request: NextRequest) {
 		if (author) {
 			// Query by author using the GSI and order by created_date
 			const queryCommand = new QueryCommand({
-				TableName: "hangout_messages",
+				TableName: "chat_messages",
 				KeyConditionExpression: "author = :authorValue",
 				ExpressionAttributeValues: marshall({
 					":authorValue": author,
 				}),
-				ScanIndexForward: false, // Set to true for ascending, false for descending
+				ScanIndexForward: sortAscending,
 			});
 			response = await dynamoDbClient.send(queryCommand);
 		} else {
 			const queryCommand = new QueryCommand({
-				TableName: "hangout_messages",
-				// IndexName: "date-index", // Name of the new GSI
-				KeyConditionExpression: "GLOBAL = :globalValue", // Changed attribute name
+				TableName: "chat_messages",
+				IndexName: "GSI_PartitionKey-created_date-index", // Your GSI name
+				KeyConditionExpression: "#gsi_pk = :gsi_pk_value", // Condition for the GSI's partition key
 				ExpressionAttributeValues: marshall({
-					":globalValue": "GLOBAL", // Changed attribute value to match
+					":gsi_pk_value": "ALL_MESSAGES", // Your constant partition key value
 				}),
-				ScanIndexForward: false, // Set to true for ascending, false for descending
+				ExpressionAttributeNames: {
+					"#gsi_pk": "GSI_PartitionKey", // Replace "GSI_PartitionKey" with the actual name of your GSI's partition key attribute
+				},
+				ScanIndexForward: sortAscending,
 			});
 
 			response = await dynamoDbClient.send(queryCommand);

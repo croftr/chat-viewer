@@ -1,24 +1,28 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import type { HangoutMessage } from "@/app/types";
 
 const authors = ["Gary Morris", "Mikey", "Nicholas Barooah", "Rob Croft", "Ian Rooney", "Lucy Barnes"];
 
 export default function DetailsPage() {
-    // --- State variables (Messages, Tabs, Gallery) ---
+    // --- State variables (Messages, Tabs, Gallery, Sort) ---
     const [messages, setMessages] = useState<HangoutMessage[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [selectedAuthor, setSelectedAuthor] = useState<string | null>(null);
+    const [sortAscending, setSortAscending] = useState(false); // Default to descending
 
-    const fetchMessages = useCallback(async (author?: string) => {
+    const fetchMessages = useCallback(async (author?: string | null, sort?: string) => {
         setLoading(true);
         setError(null);
 
         let url = "/api/messages";
         if (author) {
             url += `?author=${encodeURIComponent(author)}`;
+        }
+        if (sort) {
+            url += `${author ? "&" : "?"}sort=${sort}`;
         }
 
         try {
@@ -42,13 +46,24 @@ export default function DetailsPage() {
 
     const handleAuthorButtonClick = useCallback((author: string) => {
         setSelectedAuthor(author);
-        fetchMessages(author);
-    }, [fetchMessages]);
+        fetchMessages(author, sortAscending ? "asc" : "desc"); // Maintain current sort
+    }, [fetchMessages, sortAscending]);
 
     const handleFetchAllButtonClick = useCallback(() => {
         setSelectedAuthor(null);
-        fetchMessages();
-    }, [fetchMessages]);
+        fetchMessages(undefined, sortAscending ? "asc" : "desc"); // Maintain current sort
+    }, [fetchMessages, sortAscending]);
+
+    const handleSortToggle = useCallback(() => {
+        setSortAscending((prev) => !prev);
+    }, []);
+
+    // Fetch messages on initial load and when sort changes (if no author)
+    useEffect(() => {
+
+        fetchMessages(selectedAuthor, sortAscending ? "asc" : "desc");
+
+    }, [fetchMessages, sortAscending, selectedAuthor]);
 
     return (
         <div className="min-h-screen p-4 sm:p-8 font-[family-name:var(--font-geist-sans)]">
@@ -60,9 +75,8 @@ export default function DetailsPage() {
                 <button
                     type="button"
                     onClick={handleFetchAllButtonClick}
-                    disabled={loading || true}
-                    className="border bg-gray-400 text-gray-600 font-bold py-2 px-4 rounded"
-                // className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${loading && !selectedAuthor ? "opacity-50 cursor-not-allowed" : ""}`}
+                    disabled={loading}
+                    className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${loading && !selectedAuthor ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                     {loading && !selectedAuthor ? "Fetching All..." : "Fetch All Messages"}
                 </button>
@@ -77,6 +91,13 @@ export default function DetailsPage() {
                         {loading && selectedAuthor === author ? `Fetching ${author}...` : author}
                     </button>
                 ))}
+                <button
+                    type="button"
+                    onClick={handleSortToggle}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                >
+                    Sort {sortAscending ? "Descending" : "Ascending"}
+                </button>
             </div>
 
             <main className="w-full flex justify-center">
