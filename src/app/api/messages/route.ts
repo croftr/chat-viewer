@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 		if (author) {
 			// Query by author using the GSI and order by created_date
 			const queryCommand = new QueryCommand({
-				TableName: "chat_messages",
+				TableName: "hangout_messages",
 				KeyConditionExpression: "author = :authorValue",
 				ExpressionAttributeValues: marshall({
 					":authorValue": author,
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 		} else {
 			const queryCommand = new QueryCommand({
 				TableName: "hangout_messages",
-				IndexName: "date-index", // Name of the new GSI
+				// IndexName: "date-index", // Name of the new GSI
 				KeyConditionExpression: "GLOBAL = :globalValue", // Changed attribute name
 				ExpressionAttributeValues: marshall({
 					":globalValue": "GLOBAL", // Changed attribute value to match
