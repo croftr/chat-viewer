@@ -48,11 +48,6 @@ export default function Home() {
     }
   }, []);
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.classList.toggle('dark');
-    localStorage.setItem('theme', darkMode ? 'light' : 'dark');
-  };
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 py-6 flex flex-col items-center justify-center transition-colors duration-300">
@@ -76,6 +71,13 @@ export default function Home() {
               className="px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white font-semibold rounded-md shadow hover:bg-blue-700 dark:hover:bg-blue-600 transition duration-200"
             >
               Messages
+            </Link>
+
+            <Link
+              href="/stats"
+              className="px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white font-semibold rounded-md shadow hover:bg-blue-700 dark:hover:bg-blue-600 transition duration-200"
+            >
+              Stats
             </Link>
           </div>
 
