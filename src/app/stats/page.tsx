@@ -1206,14 +1206,14 @@ const data = [
 export default function Stats() {
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 py-6 flex flex-col items-center justify-top transition-colors duration-300">
-            <h3 className="text-3xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-                Word Cloud
+        <div className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 py-6 flex flex-col items-center justify-top transition-colors duration-300">
+            <h3 className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                Words we use
             </h3>
-            <div style={{ width: 500, height: 300 }}> {/* Adjust size as needed */}
+            <div className="p-8">
                 <TagCloud
-                    minSize={12}
-                    maxSize={35}
+                    minSize={10}
+                    maxSize={170}
                     tags={data}
                     onClick={(tag: Tag) => alert(`'${tag.value}' was selected!`)}
                 />
