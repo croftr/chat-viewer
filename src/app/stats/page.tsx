@@ -11,48 +11,16 @@ const data = [
         "count": 5467
     },
     {
-        "value": "one",
-        "count": 4421
-    },
-    {
-        "value": "get",
-        "count": 4188
-    },
-    {
         "value": "think",
         "count": 3844
-    },
-    {
-        "value": "dont",
-        "count": 3742
-    },
-    {
-        "value": "now",
-        "count": 3665
-    },
-    {
-        "value": "there",
-        "count": 3183
-    },
-    {
-        "value": "though",
-        "count": 3158
     },
     {
         "value": "ive",
         "count": 3049
     },
     {
-        "value": "going",
-        "count": 3047
-    },
-    {
         "value": "ha",
         "count": 3033
-    },
-    {
-        "value": "got",
-        "count": 2867
     },
     {
         "value": "yeah",
@@ -63,24 +31,12 @@ const data = [
         "count": 2436
     },
     {
-        "value": "bit",
-        "count": 2405
-    },
-    {
         "value": "gaz",
         "count": 2345
     },
     {
         "value": "time",
         "count": 2335
-    },
-    {
-        "value": "thats",
-        "count": 2333
-    },
-    {
-        "value": "been",
-        "count": 2291
     },
     {
         "value": "know",
@@ -103,10 +59,6 @@ const data = [
         "count": 1900
     },
     {
-        "value": "how",
-        "count": 1860
-    },
-    {
         "value": "day",
         "count": 1843
     },
@@ -121,10 +73,6 @@ const data = [
     {
         "value": "mike",
         "count": 1754
-    },
-    {
-        "value": "cant",
-        "count": 1752
     },
     {
         "value": "sure",
@@ -167,10 +115,6 @@ const data = [
         "count": 1403
     },
     {
-        "value": "see",
-        "count": 1398
-    },
-    {
         "value": "looks",
         "count": 1376
     },
@@ -185,10 +129,6 @@ const data = [
     {
         "value": "stuff",
         "count": 1330
-    },
-    {
-        "value": "here",
-        "count": 1273
     },
     {
         "value": "something",
@@ -209,10 +149,6 @@ const data = [
     {
         "value": "yeh",
         "count": 1210
-    },
-    {
-        "value": "getting",
-        "count": 1197
     },
     {
         "value": "thought",
@@ -341,6 +277,10 @@ const data = [
     {
         "value": "watched",
         "count": 841
+    },
+    {
+        "value": "these",
+        "count": 832
     },
     {
         "value": "tonight",
@@ -488,10 +428,6 @@ const data = [
     },
     {
         "value": "try",
-        "count": 662
-    },
-    {
-        "value": "1",
         "count": 662
     },
     {
@@ -1201,8 +1137,73 @@ const data = [
     {
         "value": "proper",
         "count": 305
+    },
+    {
+        "value": "reason",
+        "count": 302
+    },
+    {
+        "value": "mind",
+        "count": 300
+    },
+    {
+        "value": "interesting",
+        "count": 300
+    },
+    {
+        "value": "show",
+        "count": 299
+    },
+    {
+        "value": "whole",
+        "count": 298
+    },
+    {
+        "value": "ask",
+        "count": 294
+    },
+    {
+        "value": "saying",
+        "count": 293
+    },
+    {
+        "value": "20",
+        "count": 292
+    },
+    {
+        "value": "win",
+        "count": 291
+    },
+    {
+        "value": "took",
+        "count": 290
+    },
+    {
+        "value": "apparently",
+        "count": 290
+    },
+    {
+        "value": "suppose",
+        "count": 290
+    },
+    {
+        "value": "sunday",
+        "count": 290
+    },
+    {
+        "value": "easy",
+        "count": 290
+    },
+    {
+        "value": "leave",
+        "count": 290
+    },
+    {
+        "value": "months",
+        "count": 290
     }
 ]
+
 export default function Stats() {
 
     return (

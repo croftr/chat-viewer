@@ -43,7 +43,7 @@ export default function DetailsPage() {
         setGalleryImages([]);
         setGalleryNextToken(undefined);
         setGalleryHasMore(true);
-        // fetchGalleryImages(imagesPerPage);
+        fetchGalleryImages(imagesPerPage);
 
     }, [fetchGalleryImages, imagesPerPage]);
 

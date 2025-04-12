@@ -101,7 +101,7 @@ export default function DetailsPage() {
     }, [fetchMessages, selectedAuthor, sortAscending]);
 
     return (
-        <div className="min-h-screen p-4 sm:p-8 font-[family-name:var(--font-geist-sans)]">
+        <div className="p-4 sm:p-8 font-[family-name:var(--font-geist-sans)]">
 
             <MessageControls
                 authors={authors}
