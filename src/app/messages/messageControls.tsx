@@ -115,8 +115,7 @@ export default function MessageControls({
                 </button>
 
                 <div className="ml-4 text-gray-100 gap-1 flex items-center">
-                    {messageCount}
-                    <span className="text-gray-100">messages</span>
+                    <span className="text-gray-100">{messageCount} {selectedAuthor} messages</span>
                 </div>
             </div>
 

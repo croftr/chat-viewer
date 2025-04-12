@@ -123,11 +123,6 @@ export default function DetailsPage() {
                 selectedAuthor={selectedAuthor}
                 error={error}
             />
-
-            <footer className="mt-auto pt-10 text-center text-sm text-gray-500">
-                <p>&copy; {new Date().getFullYear()} Chat viewer</p>
-            </footer>
-            );
         </div>
     )
 }

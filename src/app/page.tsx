@@ -58,28 +58,6 @@ export default function Home() {
         </header>
 
         <main className="flex flex-col items-center gap-8 w-full max-w-3xl">
-          <div className="flex gap-4">
-            <Link
-              href="/gallery"
-              className="px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white font-semibold rounded-md shadow hover:bg-blue-700 dark:hover:bg-blue-600 transition duration-200"
-            >
-              Gallery
-            </Link>
-
-            <Link
-              href="/messages"
-              className="px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white font-semibold rounded-md shadow hover:bg-blue-700 dark:hover:bg-blue-600 transition duration-200"
-            >
-              Messages
-            </Link>
-
-            <Link
-              href="/stats"
-              className="px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white font-semibold rounded-md shadow hover:bg-blue-700 dark:hover:bg-blue-600 transition duration-200"
-            >
-              Stats
-            </Link>
-          </div>
 
           <section className="w-full rounded-md shadow-md p-6 bg-white dark:bg-gray-800">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Members (Past and Present)</h2>
