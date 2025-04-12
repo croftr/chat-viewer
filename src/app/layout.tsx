@@ -79,7 +79,7 @@ export default function RootLayout({
             href="/summarise"
             className="p-2 bg-blue-600 dark:bg-blue-500 text-white font-semibold rounded shadow hover:bg-blue-700 dark:hover:bg-blue-600 transition duration-200 sm:px-6 pl-4 pr-4"
           >
-            <FaChartBar className="inline sm:hidden" />
+            <FaMagic className="inline sm:hidden" />
             <span className="hidden sm:inline">
               <FaMagic className="inline mr-2 mb-1" />
               Summarise
