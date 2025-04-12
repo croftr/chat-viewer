@@ -3,11 +3,9 @@ import {
 	type AttributeValue,
 	DynamoDBClient,
 	QueryCommand,
-	ScanCommand,
+	type ScanCommand,
 	type QueryCommandInput,
-	type ScanCommandInput,
 	type QueryCommandOutput,
-	type ScanCommandOutput,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import type { HangoutMessage } from "@/app/types";
@@ -23,133 +21,105 @@ export async function GET(request: NextRequest) {
 		const sortOrder = searchParams.get("sort");
 		const sortAscending = sortOrder ? sortOrder.toLowerCase() === "asc" : false;
 		const searchString = searchParams.get("search");
-		const fullScanParam = searchParams.get("fullScan");
-		const performFullScan = fullScanParam?.toLowerCase() === "true";
 
 		const allMessages: HangoutMessage[] = []; // Array to accumulate results
 		let lastEvaluatedKey: Record<string, AttributeValue> | undefined =
 			undefined;
 
-		// Determine if pagination should be actively pursued for this request
-		// We paginate ONLY if doing a GSI query AND searchString is present.
-		// We'll assume fullScan doesn't need pagination unless explicitly added back.
-		// Adjust this condition if you want fullScan to also paginate by default.
 		const requiresPagination = !!searchString; // Paginate ONLY when querying GSI with a search string
-
-		// If you ALSO want fullScan to paginate, change the above line to:
-		// const requiresPagination = performFullScan || (!author && !!searchString);
 
 		console.log(`Pagination required for this request: ${requiresPagination}`);
 
 		do {
 			// Loop at least once to fetch the first page
-			let commandInput: QueryCommandInput | ScanCommandInput;
+			let commandInput: QueryCommandInput;
 			let command: QueryCommand | ScanCommand;
 
-			if (performFullScan) {
-				// --- Full Scan Logic ---
-				// NOTE: As currently configured, this scan WON'T paginate beyond the first page
-				//       unless you change the `requiresPagination` logic above.
+			// --- Query Logic ---
+			if (author) {
+				// Query by author
+				// NOTE: As currently configured, this query WON'T paginate beyond the first page.
 				console.log(
-					"Building Scan command...",
+					"Building Query command by author...",
 					lastEvaluatedKey
 						? `Starting from key: ${JSON.stringify(lastEvaluatedKey)}`
 						: "",
 				);
+				const keyConditionExpression = "author = :authorValue";
+				let filterExpression: string | undefined = undefined;
+				let expressionAttributeValues: Record<string, AttributeValue> =
+					marshall({ ":authorValue": author });
+				let expressionAttributeNames: Record<string, string> | undefined =
+					undefined;
+
+				if (searchString) {
+					filterExpression = "contains(#text, :searchText)";
+					expressionAttributeValues = marshall({
+						...unmarshall(expressionAttributeValues),
+						":searchText": searchString,
+					});
+					expressionAttributeNames = { "#text": "text" };
+				}
+
 				commandInput = {
 					TableName: "chat_messages",
+					KeyConditionExpression: keyConditionExpression,
+					FilterExpression: filterExpression,
+					ExpressionAttributeValues: expressionAttributeValues,
+					ExpressionAttributeNames: expressionAttributeNames,
+					ScanIndexForward: sortAscending,
 					ExclusiveStartKey: lastEvaluatedKey,
-					// FilterExpression etc. could be added here if needed for scan
 				};
-				command = new ScanCommand(commandInput);
+				command = new QueryCommand(commandInput);
 			} else {
-				// --- Query Logic ---
-				if (author) {
-					// Query by author
-					// NOTE: As currently configured, this query WON'T paginate beyond the first page.
-					console.log(
-						"Building Query command by author...",
-						lastEvaluatedKey
-							? `Starting from key: ${JSON.stringify(lastEvaluatedKey)}`
-							: "",
-					);
-					const keyConditionExpression = "author = :authorValue";
-					let filterExpression: string | undefined = undefined;
-					let expressionAttributeValues: Record<string, AttributeValue> =
-						marshall({ ":authorValue": author });
-					let expressionAttributeNames: Record<string, string> | undefined =
-						undefined;
+				// Query using GSI (no author specified)
+				console.log(
+					"Building Query command using GSI...",
+					lastEvaluatedKey
+						? `Starting from key: ${JSON.stringify(lastEvaluatedKey)}`
+						: "",
+				);
+				const keyConditionExpression = "#gsi_pk = :gsi_pk_value";
+				let filterExpression: string | undefined = undefined;
+				let expressionAttributeValues: Record<string, AttributeValue> =
+					marshall({ ":gsi_pk_value": "ALL_MESSAGES" });
+				let expressionAttributeNames: Record<string, string> | undefined = {
+					"#gsi_pk": "GSI_PartitionKey",
+				};
 
-					if (searchString) {
-						filterExpression = "contains(#text, :searchText)";
-						expressionAttributeValues = marshall({
-							...unmarshall(expressionAttributeValues),
-							":searchText": searchString,
-						});
-						expressionAttributeNames = { "#text": "text" };
-					}
-
-					commandInput = {
-						TableName: "chat_messages",
-						KeyConditionExpression: keyConditionExpression,
-						FilterExpression: filterExpression,
-						ExpressionAttributeValues: expressionAttributeValues,
-						ExpressionAttributeNames: expressionAttributeNames,
-						ScanIndexForward: sortAscending,
-						ExclusiveStartKey: lastEvaluatedKey,
+				// This is the scenario where pagination *might* be needed based on `requiresPagination`
+				if (searchString) {
+					filterExpression = "contains(#text, :searchText)";
+					expressionAttributeValues = marshall({
+						...unmarshall(expressionAttributeValues),
+						":searchText": searchString,
+					});
+					expressionAttributeNames = {
+						...expressionAttributeNames,
+						"#text": "text",
 					};
-					command = new QueryCommand(commandInput);
+					console.log("... GSI query includes searchString filter.");
 				} else {
-					// Query using GSI (no author specified)
 					console.log(
-						"Building Query command using GSI...",
-						lastEvaluatedKey
-							? `Starting from key: ${JSON.stringify(lastEvaluatedKey)}`
-							: "",
+						"... GSI query fetches all messages in index (no searchString).",
 					);
-					const keyConditionExpression = "#gsi_pk = :gsi_pk_value";
-					let filterExpression: string | undefined = undefined;
-					let expressionAttributeValues: Record<string, AttributeValue> =
-						marshall({ ":gsi_pk_value": "ALL_MESSAGES" });
-					let expressionAttributeNames: Record<string, string> | undefined = {
-						"#gsi_pk": "GSI_PartitionKey",
-					};
-
-					// This is the scenario where pagination *might* be needed based on `requiresPagination`
-					if (searchString) {
-						filterExpression = "contains(#text, :searchText)";
-						expressionAttributeValues = marshall({
-							...unmarshall(expressionAttributeValues),
-							":searchText": searchString,
-						});
-						expressionAttributeNames = {
-							...expressionAttributeNames,
-							"#text": "text",
-						};
-						console.log("... GSI query includes searchString filter.");
-					} else {
-						console.log(
-							"... GSI query fetches all messages in index (no searchString).",
-						);
-					}
-
-					commandInput = {
-						TableName: "chat_messages",
-						IndexName: "GSI_PartitionKey-created_date-index",
-						KeyConditionExpression: keyConditionExpression,
-						FilterExpression: filterExpression,
-						ExpressionAttributeValues: expressionAttributeValues,
-						ExpressionAttributeNames: expressionAttributeNames,
-						ScanIndexForward: sortAscending,
-						ExclusiveStartKey: lastEvaluatedKey,
-					};
-					command = new QueryCommand(commandInput);
 				}
+
+				commandInput = {
+					TableName: "chat_messages",
+					IndexName: "GSI_PartitionKey-created_date-index",
+					KeyConditionExpression: keyConditionExpression,
+					FilterExpression: filterExpression,
+					ExpressionAttributeValues: expressionAttributeValues,
+					ExpressionAttributeNames: expressionAttributeNames,
+					ScanIndexForward: sortAscending,
+					ExclusiveStartKey: lastEvaluatedKey,
+				};
+				command = new QueryCommand(commandInput);
 			}
 
 			// --- Send Command and Process Response ---
-			const response: QueryCommandOutput | ScanCommandOutput =
-				await dynamoDbClient.send(command);
+			const response: QueryCommandOutput = await dynamoDbClient.send(command);
 
 			if (response.Items) {
 				console.log(
@@ -168,12 +138,6 @@ export async function GET(request: NextRequest) {
 				"LastEvaluatedKey for next page:",
 				lastEvaluatedKey ? JSON.stringify(lastEvaluatedKey) : "None",
 			);
-
-			// --- Loop Condition ---
-			// Continue looping ONLY if:
-			// 1. DynamoDB returned a LastEvaluatedKey (meaning there *might* be more data)
-			// AND
-			// 2. The specific scenario requires us to fetch all pages (`requiresPagination` is true)
 		} while (lastEvaluatedKey && requiresPagination);
 
 		console.log(

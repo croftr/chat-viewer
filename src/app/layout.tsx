@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from 'next/link';
-import { FaHome, FaImage, FaEnvelope, FaChartBar } from "react-icons/fa";
+import { FaHome, FaImage, FaEnvelope, FaChartBar, FaMagic } from "react-icons/fa";
 import { FaMessage } from "react-icons/fa6";
 
 const geistSans = Geist({
@@ -72,6 +72,17 @@ export default function RootLayout({
             <span className="hidden sm:inline">
               <FaChartBar className="inline mr-2 mb-1" />
               Stats
+            </span>
+          </Link>
+
+          <Link
+            href="/summarise"
+            className="p-2 bg-blue-600 dark:bg-blue-500 text-white font-semibold rounded shadow hover:bg-blue-700 dark:hover:bg-blue-600 transition duration-200 sm:px-6 pl-4 pr-4"
+          >
+            <FaChartBar className="inline sm:hidden" />
+            <span className="hidden sm:inline">
+              <FaMagic className="inline mr-2 mb-1" />
+              Summarise
             </span>
           </Link>
         </nav>

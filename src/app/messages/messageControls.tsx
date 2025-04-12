@@ -65,9 +65,10 @@ export default function MessageControls({
                 <button
                     type="button"
                     onClick={handleSearch}
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2"
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2 flex gap-2 items-center"
                 >
                     <FaSearch />
+                    Case Sensitive
                 </button>
             </div>
 
