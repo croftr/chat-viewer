@@ -5,7 +5,7 @@ import React from 'react'
 import Markdown from "react-markdown";
 import remarkGfm from 'remark-gfm'
 
-export default function Stats() {
+export default function Summarise() {
     const [searchString, setSearchString] = useState<string>("");
     const [messageSummary, setMessageSummary] = useState("");
     const [loading, setLoading] = useState<boolean>(false); // State for loading status
@@ -60,13 +60,13 @@ export default function Stats() {
 
 
     return (
-        <div className="w-full overflow-y-auto pt-4">
+        <div className="overflow-y-auto pt-4 flex flex-col gap-4 max-w-md w-full justify-center align-center mx-auto mt-4">
 
             {/* Search Controls */}
             <div className="flex justify-center items-center mb-6">
                 <input
                     type="text"
-                    placeholder="Topic..." // Update placeholder if needed
+                    placeholder="Topic (case sensitive)" // Update placeholder if needed
                     value={searchString}
                     onChange={(e) => setSearchString(e.target.value)}
                     // Allow Enter key to trigger search
