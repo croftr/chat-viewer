@@ -57,7 +57,7 @@ export default function MessageControls({
             <div className="flex justify-center items-center">
                 <input
                     type="text"
-                    placeholder="Search messages..."
+                    placeholder="Search (case sensitive)"
                     value={searchString}
                     onChange={(e) => setSearchString(e.target.value)} // Update state on input change
                     className="border rounded py-2 px-3 text-white bg-gray-700 focus:outline-none focus:shadow-outline"
@@ -65,10 +65,12 @@ export default function MessageControls({
                 <button
                     type="button"
                     onClick={handleSearch}
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2 flex gap-2 items-center"
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2"
                 >
-                    <FaSearch />
-                    Case Sensitive
+                    <div className="p-1">
+                        <FaSearch />
+                    </div>
+
                 </button>
             </div>
 
