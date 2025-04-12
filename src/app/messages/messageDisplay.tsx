@@ -10,9 +10,9 @@ interface MessageDisplayProps {
 
 const MessageDisplay: React.FC<MessageDisplayProps> = ({ messages, loading, selectedAuthor, error }) => {
     return (
-        <main className="w-full flex justify-cente overflow-scroll"  >
+        <main className="w-full overflow-auto"  >
             {/* Messages Tab Content */}
-            <div className="flex flex-col gap-4 max-w-md w-full">
+            <div className="flex flex-col gap-4 max-w-md w-full justify-center align-center mx-auto mt-4 sm:mt-8">
                 {error && <p className="text-red-500 text-center">{error}</p>}
                 {loading && (
                     <div className="text-center">
