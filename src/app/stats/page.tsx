@@ -203,10 +203,6 @@ const data = [
         "count": 1016
     },
     {
-        "value": "ill",
-        "count": 1012
-    },
-    {
         "value": "right",
         "count": 1011
     },
@@ -303,10 +299,6 @@ const data = [
         "count": 793
     },
     {
-        "value": "3",
-        "count": 791
-    },
-    {
         "value": "harsh",
         "count": 772
     },
@@ -317,10 +309,6 @@ const data = [
     {
         "value": "said",
         "count": 771
-    },
-    {
-        "value": "doesnt",
-        "count": 752
     },
     {
         "value": "being",
@@ -527,10 +515,6 @@ const data = [
         "count": 541
     },
     {
-        "value": "-",
-        "count": 538
-    },
-    {
         "value": "wow",
         "count": 530
     },
@@ -547,14 +531,6 @@ const data = [
         "count": 520
     },
     {
-        "value": "4",
-        "count": 520
-    },
-    {
-        "value": "those",
-        "count": 516
-    },
-    {
         "value": "sound",
         "count": 516
     },
@@ -569,10 +545,6 @@ const data = [
     {
         "value": "phone",
         "count": 510
-    },
-    {
-        "value": "10",
-        "count": 509
     },
     {
         "value": "life",
@@ -607,16 +579,8 @@ const data = [
         "count": 487
     },
     {
-        "value": "far",
-        "count": 486
-    },
-    {
         "value": "play",
         "count": 482
-    },
-    {
-        "value": "ago",
-        "count": 481
     },
     {
         "value": "free",
@@ -635,10 +599,6 @@ const data = [
         "count": 467
     },
     {
-        "value": "once",
-        "count": 467
-    },
-    {
         "value": "anyway",
         "count": 466
     },
@@ -652,10 +612,6 @@ const data = [
     },
     {
         "value": "hours",
-        "count": 463
-    },
-    {
-        "value": "hes",
         "count": 463
     },
     {
@@ -691,10 +647,6 @@ const data = [
         "count": 446
     },
     {
-        "value": "id",
-        "count": 446
-    },
-    {
         "value": "thinking",
         "count": 446
     },
@@ -721,10 +673,6 @@ const data = [
     {
         "value": "soon",
         "count": 436
-    },
-    {
-        "value": "5",
-        "count": 429
     },
     {
         "value": "kids",
@@ -820,10 +768,6 @@ const data = [
     },
     {
         "value": "everything",
-        "count": 386
-    },
-    {
-        "value": "own",
         "count": 386
     },
     {
@@ -1023,10 +967,6 @@ const data = [
         "count": 335
     },
     {
-        "value": "6",
-        "count": 334
-    },
-    {
         "value": "bloody",
         "count": 334
     },
@@ -1201,6 +1141,66 @@ const data = [
     {
         "value": "months",
         "count": 290
+    },
+    {
+        "value": "u",
+        "count": 289
+    },
+    {
+        "value": "starting",
+        "count": 289
+    },
+    {
+        "value": "month",
+        "count": 286
+    },
+    {
+        "value": "couldnt",
+        "count": 286
+    },
+    {
+        "value": "couple",
+        "count": 285
+    },
+    {
+        "value": "pick",
+        "count": 284
+    },
+    {
+        "value": "team",
+        "count": 283
+    },
+    {
+        "value": "gary",
+        "count": 281
+    },
+    {
+        "value": "apart",
+        "count": 281
+    },
+    {
+        "value": "contract",
+        "count": 280
+    },
+    {
+        "value": "somewhere",
+        "count": 277
+    },
+    {
+        "value": "monday",
+        "count": 275
+    },
+    {
+        "value": "type",
+        "count": 275
+    },
+    {
+        "value": "quid",
+        "count": 273
+    },
+    {
+        "value": "crazy",
+        "count": 272
     }
 ]
 
@@ -1209,7 +1209,7 @@ export default function Stats() {
     return (
         <div className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 py-6 flex flex-col items-center justify-top transition-colors duration-300">
             <h3 className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                Words we use
+                Most used words
             </h3>
             <div className="p-8">
                 <TagCloud
