@@ -3,7 +3,25 @@ import { useState, useCallback } from "react"; // Import useCallback
 import { FaSearch, FaSpinner } from "react-icons/fa"; // Add spinner for loading
 import React from 'react'
 import Markdown from "react-markdown";
+import ReactMarkdown from "react-markdown";
 import remarkGfm from 'remark-gfm'
+
+const test = `Okay, here's that summary you requested:
+
+The group chat has been absolutely *goosed* with "goose" related discussions for years, and it's clear that some members are more obsessed than others – I'm looking at you, <span style="color:blue">**Mikey**</span> and <span style="color:blue">**Gary Morris**</span>! From random poems about "young gooses" that look like "mooses" to deep philosophical inquiries about "goose or gooses," it seems no avian stone has been left unturned. <span style="color:blue">**Mikey**</span> is apparently the go-to guy for goose facts and fried goose eggs.
+
+<span style="color:blue">**Rooney's**</span> goose-related IPA seems to be a recurring theme, frequently mentioned by <span style="color:blue">**Rob Croft**</span>, so much so that it's a benchmark for other strong drinks. The word "goose" has also become a catch-all term for anything broken or someone being tired, with generous helpings of "I'm goosed" from <span style="color:blue">**Ian Rooney**</span>. <span style="color:blue">**Nicholas Barooah**</span> seems to be at his wits end with all the "goose this" and "goose that".
+
+Here are some quotable moments:
+
+> There was once some lovely young gooses they looked a bit like some mooses Theyre name was keith they had loads of teeth and their mince was flavoured with their gastric juices" - <span style="color:blue">**Mikey**</span>
+
+> "...but these days i have an equal part of my brain that says youve got work in the morning stop drinking now you big goose" - <span style="color:blue">**Mikey**</span>
+
+> "I cant remember how strong that was but you know what they say if you can remember drinking the goose you never drank the goose" - <span style="color:blue">**Ian Rooney**</span>
+
+All in all, this chat loves its goose! Whether it's goosebumps from Metallica or an army goose, they have well and truly explored this topic!
+`
 
 export default function Summarise() {
     const [searchString, setSearchString] = useState<string>("");
@@ -118,7 +136,18 @@ export default function Summarise() {
                     <div className="mt-2 space-y-2 pb-6">
                         {messageSummary && (
                             <div className="prose dark:prose-invert max-w-none">
-                                <Markdown remarkPlugins={[remarkGfm]}>{messageSummary}</Markdown>
+                                <Markdown
+                                    remarkPlugins={[remarkGfm]}
+                                    components={{
+                                        strong(props) {
+                                            const { node, ...rest } = props
+                                            return <span style={{ color: '#2b7fff' }} {...rest} />
+                                        }
+                                    }}
+                                >
+
+                                    {messageSummary}
+                                </Markdown>
                             </div>
                         )}
 

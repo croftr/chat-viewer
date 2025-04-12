@@ -133,6 +133,7 @@ export async function GET(request: NextRequest) {
 
 					## OUTPUT FORMAT
 					- Respond **ONLY** with the summary formatted in **Markdown**.
+					- Authors names should be emphasized in the summary.
 					- use Markdown headings for the title and sections.
 					- try and style with markdown where appropriate.
 					- Use paragraphs for the main summary.
