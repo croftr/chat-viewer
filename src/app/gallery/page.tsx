@@ -5,20 +5,19 @@ import Image from "next/image";
 
 export default function DetailsPage() {
 
-
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
     const [galleryLoading, setGalleryLoading] = useState<boolean>(false);
     const [galleryError, setGalleryError] = useState<string | null>(null);
     const [galleryNextToken, setGalleryNextToken] = useState<string | undefined>(undefined);
     const [galleryHasMore, setGalleryHasMore] = useState<boolean>(true);
-    const [imagesPerPage] = useState<number>(50); // You can make this configurable too
+    const [imagesPerPage, setImagesPerPage] = useState<number>(50);
 
     // --- Fetch Gallery Images function ---
-    const fetchGalleryImages = useCallback(async (newToken?: string) => {
+    const fetchGalleryImages = useCallback(async (limit: number, newToken?: string) => {
         setGalleryLoading(true);
         setGalleryError(null);
         try {
-            const res = await fetch(`/api/images?limit=${imagesPerPage}${newToken ? `&nextToken=${encodeURIComponent(newToken)}` : ""}`);
+            const res = await fetch(`/api/images?limit=${limit}${newToken ? `&nextToken=${encodeURIComponent(newToken)}` : ""}`);
             if (!res.ok) {
                 const errorData = await res.json();
                 throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
@@ -37,23 +36,23 @@ export default function DetailsPage() {
         } finally {
             setGalleryLoading(false);
         }
-    }, [imagesPerPage]);
+    }, []);
 
     // --- Initial Gallery Load ---
     useEffect(() => {
         setGalleryImages([]);
         setGalleryNextToken(undefined);
         setGalleryHasMore(true);
-        fetchGalleryImages();
+        // fetchGalleryImages(imagesPerPage);
 
-    }, [fetchGalleryImages]);
+    }, [fetchGalleryImages, imagesPerPage]);
 
     // --- Load More Images ---
     const loadMore = useCallback(() => {
         if (galleryHasMore && !galleryLoading) {
-            fetchGalleryImages(galleryNextToken);
+            fetchGalleryImages(imagesPerPage, galleryNextToken);
         }
-    }, [galleryHasMore, galleryLoading, galleryNextToken, fetchGalleryImages]);
+    }, [imagesPerPage, galleryHasMore, galleryLoading, galleryNextToken, fetchGalleryImages]);
 
     return (
         <div className="flex flex-col items-center min-h-screen p-4 sm:p-8 font-[family-name:var(--font-geist-sans)]">
@@ -74,25 +73,24 @@ export default function DetailsPage() {
                             </label>
                             <select
                                 id="imagesPerPage"
-                                disabled={true}
                                 className="border rounded py-1 px-2 text-sm disabled:opacity-50"
                                 value={imagesPerPage}
                                 onChange={(e) => {
-                                    const newLimit = Number.parseInt(e.target.value, 10);
+                                    const value = Number.parseInt(e.target.value, 10);
+                                    setImagesPerPage(value);
 
-                                    if (!Number.isNaN(newLimit) && newLimit > 0) {
-                                        setGalleryImages([]);
-                                        setGalleryNextToken(undefined);
-                                        setGalleryHasMore(true);
-                                        //TODO PASS IN newLimit TO THIS
-                                        fetchGalleryImages();
-                                    }
+                                    setGalleryImages([]);
+                                    setGalleryNextToken(undefined);
+                                    setGalleryHasMore(true);
+
+                                    fetchGalleryImages(value);
+
                                 }}
                             >
-                                <option value="10">10</option>
-                                <option value="20">20</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
+                                <option className="text-gray-700" value="10">10</option>
+                                <option className="text-gray-700" value="20">20</option>
+                                <option className="text-gray-700" value="50">50</option>
+                                <option className="text-gray-700" value="100">100</option>
                             </select>
                         </div>
                         {/* Example of page navigation - adjust UI as needed */}

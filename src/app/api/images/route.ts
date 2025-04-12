@@ -31,10 +31,11 @@ export async function GET(request: NextRequest) {
 
 	const { searchParams } = request.nextUrl;
 	const limit = searchParams.get("limit")
-		? parseInt(searchParams.get("limit")!, 10)
-		: 20; // Default limit to 20
+		? Number.parseInt(searchParams.get("limit") ?? "0", 10)
+		: 50; // Default limit to 50
 	const nextToken = searchParams.get("nextToken") || undefined;
 
+	// biome-ignore lint/suspicious/noGlobalIsNan: <explanation>
 	if (isNaN(limit) || limit <= 0 || limit > 100) {
 		return NextResponse.json(
 			{ error: "Invalid limit parameter." },
