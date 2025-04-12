@@ -63,7 +63,7 @@ export default function Summarise() {
         <div className="overflow-y-auto pt-4 flex flex-col gap-4 max-w-md w-full justify-center align-center mx-auto mt-4">
 
             {/* Search Controls */}
-            <div className="flex justify-center items-center mb-6">
+            <div className="flex justify-center items-center mb-2">
                 <input
                     type="text"
                     placeholder="Topic (case sensitive)" // Update placeholder if needed
@@ -115,7 +115,7 @@ export default function Summarise() {
                 )}
 
                 {!loading && !error && messageSummary.length > 0 && (
-                    <div className="mt-4 space-y-2">
+                    <div className="mt-2 space-y-2 pb-6">
                         {messageSummary && (
                             <div className="prose dark:prose-invert max-w-none">
                                 <Markdown remarkPlugins={[remarkGfm]}>{messageSummary}</Markdown>
