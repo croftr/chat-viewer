@@ -57,7 +57,7 @@ export default function MessageControls({
             <div className="flex justify-center items-center">
                 <input
                     type="text"
-                    placeholder="Search (case sensitive)"
+                    placeholder="Search messages..."
                     value={searchString}
                     onChange={(e) => setSearchString(e.target.value)} // Update state on input change
                     className="border rounded py-2 px-3 text-white bg-gray-700 focus:outline-none focus:shadow-outline"

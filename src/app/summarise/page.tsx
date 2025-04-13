@@ -86,7 +86,7 @@ export default function Summarise() {
             <div className="flex justify-center items-center mb-2">
                 <input
                     type="text"
-                    placeholder="Topic (case sensitive)" // Update placeholder if needed
+                    placeholder="Topic..." // Update placeholder if needed
                     value={searchString}
                     onChange={(e) => setSearchString(e.target.value)}
                     // Allow Enter key to trigger search
@@ -113,7 +113,7 @@ export default function Summarise() {
             <div className="w-full max-w-4xl px-4">
                 {loading && (
                     <div className="text-center py-4">
-                        <FaSpinner className="animate-spin inline-block mr-2" /> Loading messages...
+                        <FaSpinner className="animate-spin inline-block mr-2" /> Generating summary...
                     </div>
                 )}
 
