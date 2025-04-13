@@ -4,6 +4,7 @@ import { FaSearch, FaSpinner } from "react-icons/fa"; // Add spinner for loading
 import React from 'react'
 import Markdown from "react-markdown";
 import remarkGfm from 'remark-gfm'
+import Image from "next/image";
 
 
 export default function Summarise() {
@@ -11,9 +12,26 @@ export default function Summarise() {
     const [messageSummary, setMessageSummary] = useState("");
     const [loading, setLoading] = useState<boolean>(false); // State for loading status
     const [error, setError] = useState<string | null>(null); // State for error messages
-    const [searched, setSearched] = useState<boolean>(false); // State to track if a search has been performed
+    const [searched, setSearched] = useState<boolean>(false); // State to track if a search has been performed    
+    const [image, setImage] = useState<string | null>(null); // State for the image URL
+
+    const genImage = async (imageSearch: string) => {
+        const imageResponse = await fetch(
+            `/api/generate?search=${encodeURIComponent(imageSearch)}`,
+        );
+
+        if (imageResponse.ok) {
+            const imageBlob = await imageResponse.blob();
+            const imageUrl = URL.createObjectURL(imageBlob); // Create a URL for the image
+            setImage(imageUrl);
+        } else {
+            setImage(null); // Reset image if fetching fails
+        }
+
+    }
 
     // Function to fetch data based on searchString
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     const handleSearch = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -24,6 +42,7 @@ export default function Summarise() {
         if (searchString) {
             // The API route handles the logic for using the search string
             params.append("search", searchString);
+            genImage(searchString); // Call the image generation function
         }
 
         const url = `/api/summarise?${params.toString()}`;
@@ -113,6 +132,18 @@ export default function Summarise() {
 
                 {!loading && !error && !messageSummary && (
                     <p className="text-gray-400 p-4 align-text-top">Get a summary of what the group has been saying on any topic</p>
+                )}
+
+                {image && (
+                    <div className="bg-gray-50 p-4 rounded-md mb-4">
+                        <Image
+                            src={image}
+                            alt={`Generated image of ${searchString}`}
+                            width={400}
+                            height={300}
+                            className="rounded-md"
+                        />
+                    </div>
                 )}
 
                 {!loading && !error && messageSummary.length > 0 && (
