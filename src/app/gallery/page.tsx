@@ -58,7 +58,7 @@ export default function DetailsPage() {
         <div className="flex flex-col items-center min-h-screen p-4 sm:p-8 font-[family-name:var(--font-geist-sans)]">
 
             <header className="text-center mb-6">
-                <h1 className="text-2xl font-bold">Image Gallery</h1>
+                <h1 className="text-2xl font-bold">5972 Images</h1>
             </header>
 
             {/* Tab Content */}
@@ -92,6 +92,7 @@ export default function DetailsPage() {
                                 <option className="text-gray-700" value="50">50</option>
                                 <option className="text-gray-700" value="100">100</option>
                             </select>
+
                         </div>
                         {/* Example of page navigation - adjust UI as needed */}
                         {galleryHasMore && (
@@ -101,7 +102,7 @@ export default function DetailsPage() {
                                 disabled={galleryLoading}
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-sm"
                             >
-                                {galleryLoading ? "Loading..." : `Get next ${imagesPerPage} images`}
+                                {galleryLoading ? "Loading..." : `Next ${imagesPerPage} images`}
                             </button>
                         )}
                     </div>
