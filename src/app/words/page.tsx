@@ -1,4 +1,5 @@
 "use client"; // Ensure this is a client component for dark mode toggle (if needed)
+import { useState } from "react";
 import { TagCloud, type Tag } from "react-tagcloud";
 
 const data = [
@@ -1206,17 +1207,19 @@ const data = [
 
 export default function Stats() {
 
+    const [title, setTitle] = useState("Click on a word to see how many times it was used");
+
     return (
-        <div className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 py-6 flex flex-col items-center justify-top transition-colors duration-300">
-            <h3 className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                Most used words
+        <div className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex flex-col items-center justify-top transition-colors duration-300">
+            <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400 text-center p-4">
+                {title}
             </h3>
             <div className="p-8">
                 <TagCloud
                     minSize={10}
                     maxSize={170}
                     tags={data}
-                    onClick={(tag: Tag) => alert(`'${tag.value}' was selected!`)}
+                    onClick={(tag: Tag) => setTitle(`'${tag.value}' was used ${tag.count} times`)}
                 />
             </div>
         </div>
