@@ -8,7 +8,7 @@ import {
 	type QueryCommandOutput,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
-import type { HangoutMessage } from "@/app/types";
+import type { FilteredHangoutMessage, HangoutMessage } from "@/app/types";
 
 const dynamoDbClient = new DynamoDBClient({
 	region: "eu-north-1",
@@ -20,9 +20,13 @@ export async function GET(request: NextRequest) {
 		const author = searchParams.get("author");
 		const sortOrder = searchParams.get("sort");
 		const sortAscending = sortOrder ? sortOrder.toLowerCase() === "asc" : false;
-		const searchString = searchParams.get("search");
+		let searchString = searchParams.get("search");
 
-		const allMessages: HangoutMessage[] = []; // Array to accumulate results
+		if (searchString) {
+			searchString = searchString.trim().toLowerCase();
+		}
+
+		const allMessages: FilteredHangoutMessage[] = []; // Array to accumulate results
 		let lastEvaluatedKey: Record<string, AttributeValue> | undefined =
 			undefined;
 
@@ -37,8 +41,6 @@ export async function GET(request: NextRequest) {
 
 			// --- Query Logic ---
 			if (author) {
-				// Query by author
-				// NOTE: As currently configured, this query WON'T paginate beyond the first page.
 				console.log(
 					"Building Query command by author...",
 					lastEvaluatedKey
@@ -53,16 +55,16 @@ export async function GET(request: NextRequest) {
 					undefined;
 
 				if (searchString) {
-					filterExpression = "contains(#text, :searchText)";
+					filterExpression = "contains(#formatted_text, :searchText)";
 					expressionAttributeValues = marshall({
 						...unmarshall(expressionAttributeValues),
 						":searchText": searchString,
 					});
-					expressionAttributeNames = { "#text": "text" };
+					expressionAttributeNames = { "#formatted_text": "text" };
 				}
 
 				commandInput = {
-					TableName: "chat_messages",
+					TableName: "formatted_messages",
 					KeyConditionExpression: keyConditionExpression,
 					FilterExpression: filterExpression,
 					ExpressionAttributeValues: expressionAttributeValues,
@@ -89,14 +91,14 @@ export async function GET(request: NextRequest) {
 
 				// This is the scenario where pagination *might* be needed based on `requiresPagination`
 				if (searchString) {
-					filterExpression = "contains(#text, :searchText)";
+					filterExpression = "contains(#formatted_text, :searchText)";
 					expressionAttributeValues = marshall({
 						...unmarshall(expressionAttributeValues),
 						":searchText": searchString,
 					});
 					expressionAttributeNames = {
 						...expressionAttributeNames,
-						"#text": "text",
+						"#formatted_text": "formatted_text",
 					};
 					console.log("... GSI query includes searchString filter.");
 				} else {
@@ -106,7 +108,7 @@ export async function GET(request: NextRequest) {
 				}
 
 				commandInput = {
-					TableName: "chat_messages",
+					TableName: "formatted_messages",
 					IndexName: "GSI_PartitionKey-created_date-index",
 					KeyConditionExpression: keyConditionExpression,
 					FilterExpression: filterExpression,
@@ -126,9 +128,17 @@ export async function GET(request: NextRequest) {
 					`Workspaceed ${response.Count} items in this page. Scanned ${response.ScannedCount}.`,
 				);
 				// biome-ignore lint/complexity/noForEach: <explanation>
-				response.Items.forEach((item: Record<string, AttributeValue>) =>
-					allMessages.push(unmarshall(item) as HangoutMessage),
-				);
+				response.Items.forEach((item: Record<string, AttributeValue>) => {
+					const unmarshalledItem = unmarshall(item);
+					// Filter out unwanted attributes here
+					const filteredItem: FilteredHangoutMessage = {
+						created_date: unmarshalledItem.created_date,
+						text: unmarshalledItem.text,
+						author: unmarshalledItem.author,
+						// Add other desired fields as needed
+					};
+					allMessages.push(filteredItem);
+				});
 			} else {
 				console.log("No items returned in this page.");
 			}

@@ -7,7 +7,7 @@ import {
 	type QueryCommandOutput,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
-import type { HangoutMessage } from "@/app/types";
+import type { FilteredHangoutMessage, HangoutMessage } from "@/app/types";
 import { GoogleGenAI } from "@google/genai";
 
 const dynamoDbClient = new DynamoDBClient({
@@ -22,9 +22,13 @@ export async function GET(request: NextRequest) {
 	try {
 		const { searchParams } = request.nextUrl;
 
-		const searchString = searchParams.get("search");
+		let searchString = searchParams.get("search");
 
-		const allMessages: HangoutMessage[] = [];
+		if (searchString) {
+			searchString = searchString.trim().toLowerCase();
+		}
+
+		const allMessages: FilteredHangoutMessage[] = [];
 
 		let lastEvaluatedKey: Record<string, AttributeValue> | undefined =
 			undefined;
@@ -54,14 +58,14 @@ export async function GET(request: NextRequest) {
 
 			// This is the scenario where pagination *might* be needed based on `requiresPagination`
 			if (searchString) {
-				filterExpression = "contains(#text, :searchText)";
+				filterExpression = "contains(#formatted_text, :searchText)";
 				expressionAttributeValues = marshall({
 					...unmarshall(expressionAttributeValues),
 					":searchText": searchString,
 				});
 				expressionAttributeNames = {
 					...expressionAttributeNames,
-					"#text": "text",
+					"#formatted_text": "formatted_text",
 				};
 				console.log("... GSI query includes searchString filter.");
 			} else {
@@ -71,7 +75,7 @@ export async function GET(request: NextRequest) {
 			}
 
 			const commandInput: QueryCommandInput = {
-				TableName: "chat_messages",
+				TableName: "formatted_messages",
 				IndexName: "GSI_PartitionKey-created_date-index",
 				KeyConditionExpression: keyConditionExpression,
 				FilterExpression: filterExpression,
@@ -89,9 +93,17 @@ export async function GET(request: NextRequest) {
 					`Workspaceed ${response.Count} items in this page. Scanned ${response.ScannedCount}.`,
 				);
 				// biome-ignore lint/complexity/noForEach: <explanation>
-				response.Items.forEach((item: Record<string, AttributeValue>) =>
-					allMessages.push(unmarshall(item) as HangoutMessage),
-				);
+				response.Items.forEach((item: Record<string, AttributeValue>) => {
+					const unmarshalledItem = unmarshall(item);
+
+					const filteredItem: FilteredHangoutMessage = {
+						created_date: unmarshalledItem.created_date,
+						text: unmarshalledItem.text,
+						author: unmarshalledItem.author,
+						// Add other desired fields as needed
+					};
+					allMessages.push(filteredItem);
+				});
 			} else {
 				console.log("No items returned in this page.");
 			}

@@ -5,3 +5,9 @@ export type HangoutMessage = {
 	text: string;
 	topic_id: string;
 };
+
+export type FilteredHangoutMessage = {
+	created_date: string;
+	text: string;
+	author: string;
+};
